@@ -24,6 +24,8 @@ export async function initializeDatabase(pool) {
       );
     `);
 
+    console.log('tableCheck', tableCheck);
+
     const tableExists = tableCheck.rows[0].exists;
 
     if (tableExists) {
