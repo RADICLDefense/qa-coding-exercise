@@ -1,0 +1,135 @@
+# render.yaml - Blueprint for deploying to Render.com
+# This file defines all services needed for the application
+# 
+# To use: 
+# 1. Create account at render.com
+# 2. Create "New Blueprint Instance"
+# 3. Connect your GitHub repository
+# 4. Render will automatically provision all services
+#
+# For more info: https://render.com/docs/blueprint-spec
+
+# ============================================
+# Databases
+# ============================================
+
+databases:
+  - name: radicl-postgres
+    plan: free
+    region: oregon
+
+# ============================================
+# Services
+# ============================================
+
+services:
+  # Node.js Backend Service
+  - type: web
+    name: radicl-node-service
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: "cd backend/node-service && npm install"
+    startCommand: "cd backend/node-service && npm start"
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: radicl-postgres
+          property: connectionString
+      - key: PORT
+        value: 3001
+      - key: NODE_ENV
+        value: production
+    healthCheckPath: /api/health
+
+  # Go Backend Service (Optional)
+  - type: web
+    name: radicl-go-service
+    env: go
+    region: oregon
+    plan: free
+    buildCommand: "cd backend/go-service && go build -o service"
+    startCommand: "cd backend/go-service && ./service"
+    envVars:
+      - key: DB_HOST
+        fromDatabase:
+          name: radicl-postgres
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: radicl-postgres
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: radicl-postgres
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: radicl-postgres
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: radicl-postgres
+          property: password
+      - key: DB_SSLMODE
+        value: require
+      - key: PORT
+        value: 3002
+    healthCheckPath: /api/health
+
+  # Frontend (Static Site)
+  - type: web
+    name: radicl-frontend
+    env: static
+    buildCommand: "cd frontend && npm install --include=dev && npm run build"
+    staticPublishPath: ./frontend/dist
+    pullRequestPreviewsEnabled: true
+    envVars:
+      - key: VITE_NODE_API_URL
+        fromService:
+          name: radicl-node-service
+          type: web
+          property: host
+      - key: VITE_GO_API_URL
+        fromService:
+          name: radicl-go-service
+          type: web
+          property: host
+    headers:
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+
+# ============================================
+# Notes for Candidates
+# ============================================
+#
+# Free Tier Limitations:
+# - Services spin down after 15 minutes of inactivity
+# - First request after spin down will be slow (cold start)
+# - PostgreSQL free tier has 90-day expiration
+#
+# Environment Variables:
+# - Render automatically injects database connection info
+# - You can add custom env vars in the Render dashboard
+#
+# Deployment:
+# - Push to your GitHub repository
+# - Render will automatically rebuild and redeploy
+#
+# Alternative Setup (Manual):
+# 1. Create PostgreSQL database manually in Render dashboard
+# 2. Create web services for Node.js and Go backends
+# 3. Create static site for frontend
+# 4. Configure environment variables manually
+# 5. Link services together
+#
+# ============================================
+

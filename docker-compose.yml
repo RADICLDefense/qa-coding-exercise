@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: radicl-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-radicl_db}
+      POSTGRES_USER: ${POSTGRES_USER:-radicl_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-radicl_password}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-radicl_user} -d ${POSTGRES_DB:-radicl_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - radicl-network
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  radicl-network:
+    driver: bridge
+

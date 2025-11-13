@@ -1,0 +1,31 @@
+{
+  "name": "supreme-octo-spork",
+  "version": "1.0.0",
+  "description": "Full-stack application with React.js frontend and Node.js + Go backend services",
+  "private": true,
+  "scripts": {
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:node": "cd backend/node-service && npm run dev",
+    "dev:go": "cd backend/go-service && go run main.go",
+    "build:frontend": "cd frontend && npm run build",
+    "build:node": "cd backend/node-service && npm start",
+    "build:go": "cd backend/go-service && go build -o go-service",
+    "install:all": "npm install && cd frontend && npm install && cd ../backend/node-service && npm install && cd ../go-service && go mod tidy",
+    "start:all": "concurrently \"npm run dev:node\" \"npm run dev:go\" \"npm run dev:frontend\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "react",
+    "nodejs",
+    "golang",
+    "express",
+    "vite",
+    "fullstack"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}  
+
