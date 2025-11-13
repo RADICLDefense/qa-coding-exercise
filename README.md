@@ -101,7 +101,7 @@ nvm use 20.19
 node --version  # Should show v20.19.x or higher
 ```
 
-### 0. Clone the Repository
+### 1. Clone the Repository
 
 ```bash
 # Clone the repository
@@ -116,7 +116,7 @@ cd qa-coding-exercise
 git clone https://github.com/RADICLDefense/qa-coding-exercise.git
 ```
 
-### 1. Quick Start with Automated Script (Optional)
+### 2. Quick Start with Automated Script (Optional)
 
 We provide automated startup scripts for quick setup:
 
@@ -141,9 +141,9 @@ The script will:
 
 ---
 
-### 2. Manual Setup
+### 3. Manual Setup
 
-#### 2.1. Start the PostgreSQL Database
+#### 3.1. Start the PostgreSQL Database
 
 ```bash
 docker compose up -d
@@ -151,7 +151,7 @@ docker compose up -d
 
 The database will run on `localhost:5432`. See [database/README.md](database/README.md) for detailed configuration.
 
-#### 2.2. Start the Node.js Backend
+#### 3.2. Start the Node.js Backend
 
 ```bash
 cd backend/node-service
@@ -161,7 +161,7 @@ npm run dev
 
 The Node.js service will run on `http://localhost:3001`
 
-#### 2.3. Start the Go Backend
+#### 3.3. Start the Go Backend
 
 ```bash
 cd backend/go-service
@@ -171,7 +171,7 @@ go run main.go
 
 The Go service will run on `http://localhost:3002`
 
-#### 2.4. Start the React Frontend
+#### 3.4. Start the React Frontend
 
 ```bash
 cd frontend
